@@ -1,17 +1,15 @@
 'use strict'
 
 
-var winston = require('winston');
+var logger = require('../logger');
 var express = require('express');
 var Webserver = express(); 
 var _ = require('lodash')
 var server = require('http').createServer(Webserver);
-var port = process.env.PORT || 3000
+var port = process.env.PORT || 3000;
 
 
-;(function(app) {
-
-    
+(function(app) {    
 
     // server listener module
     module.exports.listen = function (callback, p) {
@@ -22,16 +20,16 @@ var port = process.env.PORT || 3000
         //on case throught the error this method callback an error about
         server.on('error', function (err) {
           if (err.code === 'EADDRINUSE') {
-            winston.error('Address in use, exiting...')
+            logger.error('Address in use, exiting...')
             server.close()
           } else {
-            winston.error(err.message)
+            logger.error(err.message)
             throw err
           }
         })
     
         server.listen(port, '0.0.0.0', function () {
-          winston.info('TruDesk is now listening on port: ' + port);    
+          logger.info('webservice is now listening on port: ' + port);  
           if(_.isFunction(callback)) return callback;
         })
       }
