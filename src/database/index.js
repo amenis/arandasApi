@@ -5,37 +5,43 @@ var mongoose = require('mongoose');
 var logger = require('../../logger');
 var fs = require('fs');
 var path  = require('path');
-var db = {};
+mongoose.Promise = global.Promise
+mongoose.set('useFindAndModify', false)
 
-var MONGOCONNECTIONS = {
-    server: nconf.get('mongo:host') || 'localhost',
-    port: nconf.get('mongo:port') || '27017',
-    username: nconf.get('mongo:username'),
-    password: nconf.get('mongo:password'),
-    database: nconf.get('mongo:database') || 'arandasApi', 
-};
+var configData;
+fs.readFileSync('./config.json', (err, data)=> {
+    if(err) throw err
+    configData = JSON.parse(data);    
+    console.log(configData);
+});
 
-
-var MONGO_URI = '';
-
-if( !MONGOCONNECTIONS.username && !MONGOCONNECTIONS.password ) {
-    MONGO_URI = 'mongodb://' + 
-    MONGOCONNECTIONS.server + 
-    ':' + 
-    MONGOCONNECTIONS.port +
-     '/' + 
-    MONGOCONNECTIONS.database;    
-} else {
-    MONGO_URI = 'mongodb://' + 
-    MONGOCONNECTIONS.username + 
-    ':' + 
-    MONGOCONNECTIONS.password + 
-    '@' + 
-    MONGOCONNECTIONS.server + 
-    '/' 
-    +MONGOCONNECTIONS.database;
+var mongoconnections = {
+    server: 'localhost',
+    port: nconf.get('mongo:port') || 27017,
+    username: nconf.get('mongo:username') || '',
+    password: nconf.get('mongo:password') || '',
+    database: nconf.get('mongo:database') || 'arandasApi',
+    shard: false
 }
- 
+
+var mongo_uri = ''; 
+
+if( !mongoconnections.username ) {
+    mongo_uri = `mongodb://${mongoconnections.server}:${mongoconnections.port}/${mongoconnections.database}`;
+    if( mongoconnections.shard ) {
+        mongo_uri = `mongodb+srv://${mongoconnections.server}/${mongoconnections.database}`;
+    }
+} else {
+    mongoconnections.password = encodeURIComponent(mongoconnections.password);
+    if( mongoconnections.shard ) {
+        mongo_uri = `mongodb+srv://${mongoconnections.username}:${mongoconnections.password}@${mongoconnections.server}/${mongoconnections.database}`;
+    } else {
+        mongo_uri = `mongodb://${mongoconnections.username}:${mongoconnections.password}@${mongoconnections.server}:${mongoconnections.port}/${mongoconnections.database}`;
+    }
+}
+
+if ( process.env.TD_MONGODB_URI ) mongo_uri= process.env.TD_MONGODB_URI; 
+
 var options = {
     keepAlive: 1,
     connectTimeoutMS: 30000,
@@ -43,25 +49,19 @@ var options = {
     useCreateIndex: true
 }
 
-module.exports.initDB = (callback) => {
-    mongoose.Promise = global.Promise;
-    mongoose.set('useFindAndModify', false);
-
-    mongoose.connect(MONGO_URI,options)
-    .then( ()=> {
-        if (!process.env.FORK) {
-            logger.info('Connected to MongoDB')
-        }
-    
-        db.connection = mongoose.connection
-        mongoose.connection.db.admin().command({ buildInfo: 1 }, function (err, info) {
-        if (err) logger.warn(err.message)
-            db.version = info.version
+function initDB(callback) {
+    //console.log(mongo_uri);
+    mongoose.connect(mongo_uri,options)
+    .then( (db)=> {
+        logger.info('CONNECTED TO MONGODB');
+        mongoose.connection.db.admin().command({ buildInfo: 1 }, (err, info)=> {
+            if (err) logger.warn(err);
             return callback(null, db)
-        })
+        });
+        
     } )
-    .catch(err=> {
-        logger.error(err.message);
-        return callback(err,null);
-    });
+    .catch( (err)=> {
+        return callback(err, null)
+    } );
 }
+module.exports = { initDB }
