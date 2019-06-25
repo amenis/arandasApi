@@ -2,20 +2,17 @@
 
 var nconf = require('nconf');
 var mongoose = require('mongoose');
-var winston = require('winston');
-
-mongoose.Promise = global.Promise;
-mongoose.set('useFindAndModify', false);
-
+var logger = require('../../logger');
+var fs = require('fs');
+var path  = require('path');
 var db = {};
 
-
 var MONGOCONNECTIONS = {
-    server: process.env.TD_MONGODB_SERVER || nconf.get('mongo:host'),
-    port: process.env.TD_MONGODB_PORT || nconf.get('mongo:port') || '27017',
-    username: process.env.TD_MONGODB_USERNAME || nconf.get('mongo:username'),
-    password: process.env.TD_MONGODB_PASSWORD || nconf.get('mongo:password'),
-    database: process.env.TD_MONGODB_DATABASE || nconf.get('mongo:database'), 
+    server: nconf.get('mongo:host') || 'localhost',
+    port: nconf.get('mongo:port') || '27017',
+    username: nconf.get('mongo:username'),
+    password: nconf.get('mongo:password'),
+    database: nconf.get('mongo:database') || 'arandasApi', 
 };
 
 
@@ -47,14 +44,24 @@ var options = {
 }
 
 module.exports.initDB = (callback) => {
-    console.log(db.connections);
-    mongoose.connect(MONGO_URI, options)    
-    .then( () => {
-        winston.info('MONGODB IS CONNECTED');
-        return callback(null, db);
-    })
-    .catch( err => {
-        winston.warn(err);
-        return callback(err, null);
+    mongoose.Promise = global.Promise;
+    mongoose.set('useFindAndModify', false);
+
+    mongoose.connect(MONGO_URI,options)
+    .then( ()=> {
+        if (!process.env.FORK) {
+            logger.info('Connected to MongoDB')
+        }
+    
+        db.connection = mongoose.connection
+        mongoose.connection.db.admin().command({ buildInfo: 1 }, function (err, info) {
+        if (err) logger.warn(err.message)
+            db.version = info.version
+            return callback(null, db)
+        })
+    } )
+    .catch(err=> {
+        logger.error(err.message);
+        return callback(err,null);
     });
 }
