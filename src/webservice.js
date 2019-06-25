@@ -3,13 +3,21 @@
 
 var logger = require('../logger');
 var express = require('express');
+var async = require('async');
 var Webserver = express(); 
 var _ = require('lodash')
 var server = require('http').createServer(Webserver);
+var middleware = require('./middleware');
 var port = process.env.PORT || 3000;
 
 
 (function(app) {    
+
+    module.exports.app = app;
+    
+    app.use('/', (req, res) => {
+      res.send({message: 'Welcome'});
+    });
 
     // server listener module
     module.exports.listen = function (callback, p) {
@@ -30,7 +38,7 @@ var port = process.env.PORT || 3000;
     
         server.listen(port, '0.0.0.0', function () {
           logger.info('webservice is now listening on port: ' + port);  
-          if(_.isFunction(callback)) return callback;
+          if(_.isFunction(callback)) return callback();
         })
       }
     
