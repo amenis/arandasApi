@@ -8,6 +8,7 @@ var Webserver = express();
 var _ = require('lodash')
 var server = require('http').createServer(Webserver);
 var middleware = require('./middleware');
+var routes = require('./routes');
 var port = process.env.PORT || 3000;
 
 
@@ -15,8 +16,10 @@ var port = process.env.PORT || 3000;
 
     module.exports.app = app;
     
-    app.use('/', (req, res) => {
-      res.send({message: 'Welcome'});
+    //middleware routes
+    middleware(app,()=> {
+      // routes 
+      routes(app);
     });
 
     // server listener module
