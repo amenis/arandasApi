@@ -14,23 +14,19 @@ var userSchema = Schema({
         required: true,
         unique: true,
         lowercase: true,
-        /*validate: (value) => {
+        validate: (value) => {
           return validator.isEmail(value);
-        }*/
+        }
     },
     role: { type: String },
     avatar: { type: String },
     username: { 
         type: String,
-       /* validate: (value) => {
-            return validator.isEmpty(value);
-        }*/
+        required: true
     },
     password: { 
         type: String,
-        /*validate: (value) => {
-            return validator.isEmpty(value);
-        } */
+        required: true
     }
 });
 
