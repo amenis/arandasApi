@@ -4,12 +4,16 @@ var express = require('express');
 var router = express.Router();
 var logger = require('../../logger');
 var path = require('path');
+var controllers = require('../controllers');
 
-function MainRoutes(router) {
+function MainRoutes(router, controllers) {
     
     router.get('/',(req, res)=>  {
         res.sendFile(path.join(__dirname,'../view/index.html'));
     });
+
+    router.get('/api/pruebas', controllers.accounts.prueba);
+    router.post('/api/register', controllers.accounts.saveUser);
 }
 
 
@@ -18,30 +22,31 @@ function  handleErrors(err, req, res) {
     res.status(err.status);
     
     if(status === 404){
-        res.render('404', {layout: false});
+        res.status('404').send({layout: false});
         return 
     }
 
     if(status === 503){
-        res.render('503', {layout: false });
+        res.status('503').send({layout: false });
         return
     }
 
     logger.warn(err.stack);
-    res.render('error', {
-        message: err.message,
+    res.send('error', {
+        message: err,
         error: err,
         layout: false
     });
 }
 
 function handle404(req, res){
-    res.status(404).render('404', {layout: false});
+    res.status(404).send({layout: false });
+    
 }
 
 module.exports = (app, middleware ) => {
-    app.use('/', router);
-    MainRoutes(router);
+    MainRoutes(router, controllers);
+    app.use('/', router);  
     app.use(handle404);
     app.use(handleErrors);
 };
