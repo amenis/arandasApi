@@ -13,7 +13,7 @@ function MainRoutes(router, controllers) {
     });
 
     router.get('/api/pruebas', controllers.accounts.prueba);
-    router.post('/api/register', controllers.accounts.saveUser);
+    router.post('/api/register', controllers.accounts.saveAccount);
 }
 
 
