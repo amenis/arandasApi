@@ -9,6 +9,7 @@ var _ = require('lodash')
 var server = require('http').createServer(Webserver);
 var middleware = require('./middleware');
 var routes = require('./routes');
+var defults = require('./settings/defautls');
 var port = process.env.PORT || 3000;
 
 
@@ -40,7 +41,11 @@ var port = process.env.PORT || 3000;
         })
     
         server.listen(port, '0.0.0.0', function () {
-          logger.info('webservice is now listening on port: ' + port);  
+          logger.info('webservice is now listening on port: ' + port);
+          defults.createRolesByDefaut( (err, defaults) => {
+            if(err) logger.warn(err);
+            logger.info('DEFAULTS CREATED');
+          } );  
           if(_.isFunction(callback)) return callback();
         })
       }
