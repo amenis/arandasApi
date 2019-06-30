@@ -9,7 +9,7 @@ var _ = require('lodash')
 var server = require('http').createServer(Webserver);
 var middleware = require('./middleware');
 var routes = require('./routes');
-var defults = require('./settings/defautls');
+var defults = require('./settings/defaults');
 var port = process.env.PORT || 3000;
 
 
