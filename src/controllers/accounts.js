@@ -3,6 +3,7 @@
 var jwt = require('../services/jwt');
 var bcrypt = require('bcrypt-nodejs');
 var Accounts = require('../models/accounts');
+var userData = require('../models/userData');
 var logger = require('../../logger');
 
 var prueba = (req, res) => {
@@ -45,7 +46,44 @@ var saveAccount = (req, res)=> {
     }); 
 }
 
+var saveUserData = (req, res) => {
+    userData = new userData();
+    var params = req.body;
+    
+    userData.phoneNumber = params.phoneNumber;
+    userData.phoneLada = params.phoneLada;
+    userData.address = params.address;
+    userData.numAddress = params.numAddress;
+    userData.city = params.city;
+    userData.state = params.state;
+    userData.account = params.account;
+
+    userData.save( (err, savedData) => {
+        if(err) {
+            logger.warm(err);
+            req.status(500).send({message: err});
+        } else {
+            if(!savedData) {
+                logger.info(savedData);
+                req.status(400).send({ message: 'error al registar los datos'});
+            } else {
+                res.status(200).send({message: 'Los datos han sido guardados correctamente'});
+            }
+        }
+        
+    } );
+}
+
+var updateData = (req, res) => {
+
+}
+
+var updateAccount = (req, res) => {
+
+}
+
 module.exports = {
     prueba,
-    saveAccount
+    saveAccount,
+    saveUserData
 }
