@@ -44,7 +44,6 @@ module.exports = function (app, callback) {
     });
 }
 
-
 //CORS
 function allowCrossDomain (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*')
