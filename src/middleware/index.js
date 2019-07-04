@@ -6,8 +6,9 @@ var logger = require('../../logger');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var moment =require('moment');
+var Chance = require('chance');
 // routers
-
+var chance = new Chance();
 module.exports = function (app, callback) {
     app.use(bodyParser.urlencoded({extended:false}));
     app.use(bodyParser.json());
@@ -24,7 +25,7 @@ module.exports = function (app, callback) {
        function (next) {
         app.use(
             session({
-                secret: 'arandasApi$123#sessionKeY!2895',
+                secret: chance.hash() + chance.md5(),
                 cookie: cookie,
                 saveUninitialized: false,
                 resave: false
