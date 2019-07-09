@@ -5,6 +5,7 @@ var bcrypt = require('bcrypt-nodejs');
 var Accounts = require('../models/accounts');
 var userData = require('../models/userData');
 var logger = require('../../logger');
+var validator = require('validator');
 
 var prueba = (req, res) => {
     res.status(200).send({message: 'Testing User Controller' });
@@ -74,6 +75,35 @@ var saveUserData = (req, res) => {
     } );
 }
 
+var login = (req, res) => {
+    
+    var email = req.body.email;
+    var password = req.body.password;
+    
+    Accounts.findOne({ $or: [{email: email}, {username: email } ]}, (err, user) => {
+
+        if(err) {
+            res.status(500).send({message: 'Error en la peticion'});
+        } else {
+            if(!user ){
+                res.status(404).send({ message: 'el usuario no existe o se encuentra mal escrito' });               
+            } else {
+               bcrypt.compare(password, user.password, (err, check) => {
+                    if(check){
+                        res.status(200).send({token: jwt.createToken(user) });
+                    }
+                    else {
+                        res.status(404).send({message: 'Contraseña incorrecta '});
+                    }
+
+               })
+            }
+        }     
+
+    })
+  
+}
+
 var updateData = (req, res) => {
 
 }
@@ -86,5 +116,6 @@ var updateAccount = (req, res) => {
 module.exports = {
     prueba,
     saveAccount,
-    saveUserData
+    saveUserData,
+    login
 }
