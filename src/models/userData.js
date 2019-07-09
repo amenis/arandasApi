@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UserDataSchema = new Schema({
-    phoneNumber:  { type: number },
+    phoneNumber:  { type: Number },
     phoneLada: { type: Number },
     adress: { type: String },
     numAdress: { type: String },
