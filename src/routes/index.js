@@ -13,11 +13,11 @@ function MainRoutes(router, controllers) {
     });
 
     router.get('/api/pruebas', controllers.accounts.prueba);
+    router.post('/api/login', controllers.accounts.login);
     router.post('/api/register', controllers.accounts.saveAccount);
     router.post('/api/userData', controllers.accounts.saveUserData);
     
 }
-
 
 function  handleErrors(err, req, res) {
     var status = err.status || 500;
