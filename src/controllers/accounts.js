@@ -77,7 +77,7 @@ var saveUserData = (req, res) => {
 
 var login = (req, res) => {
     
-    var email = req.body.email;
+    var email = validator.isEmpty(req.body.email) ? validator.isEmail(req.body.email) : req.body.email;
     var password = req.body.password;
     
     Accounts.findOne({ $or: [{email: email}, {username: email } ]}, (err, user) => {
