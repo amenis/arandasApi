@@ -12,11 +12,14 @@ function MainRoutes(router, controllers) {
         res.sendFile(path.join(__dirname,'../view/index.html'));
     });
 
+    //accounts 
     router.get('/api/pruebas', controllers.accounts.prueba);
     router.post('/api/login', controllers.accounts.login);
     router.post('/api/register', controllers.accounts.saveAccount);
     router.post('/api/userData', controllers.accounts.saveUserData);
     
+    //stores
+    router.post('/api/addNewStore', controllers.stores.newStore);
 }
 
 function  handleErrors(err, req, res) {
