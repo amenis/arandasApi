@@ -20,6 +20,7 @@ function MainRoutes(router, controllers) {
     
     //stores
     router.post('/api/addNewStore', controllers.stores.newStore);
+    router.post('/api/addNewProduct', controllers.stores.addNewProduct);
 }
 
 function  handleErrors(err, req, res) {
