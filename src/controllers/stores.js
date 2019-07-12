@@ -2,7 +2,9 @@
 
 var logger = require('../../logger');
 var Stores = require('../models/stores');
+var Products = require('../models/products');
 //var validator = require('validator');
+var _ = require('lodash');
 
 var storesController = {};
 
@@ -33,5 +35,31 @@ storesController.newStore = (req, res) => {
     });
     
 }
+
+
+storesController.addNewProduct = (req, res) => {
+    var postData = req.body;
+    var product = new Products(postData);
+    if(!_.isUndefined( postData.store ) ) {
+        product.store = postData.store;
+    } else {
+        res.status(500).send({ message: 'No se ha encontrado ninguna tienda vinculada al producto' });
+
+    }   
+    
+    product.save( (err, p) => {
+        if(err) {
+            logger.warn(err);
+            res.status(400).send({message: err});
+        }
+        if( !p ) {
+            res.status(500).send({message: 'No ha sido posible guardar el producto'});
+        } else {
+            res.status(200).send({product:p});
+        }
+    } );
+
+}
+
 
 module.exports = storesController;
