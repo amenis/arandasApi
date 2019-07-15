@@ -2,7 +2,8 @@
 
 var Controllers = {
     accounts: require('./accounts'),
-    stores: require('./stores')
+    stores: require('./stores'),
+    deliveryMan: require('./deliveryMan')
 };
 
 module.exports = Controllers;
