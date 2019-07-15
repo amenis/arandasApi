@@ -77,30 +77,36 @@ var saveUserData = (req, res) => {
 
 var login = (req, res) => {
     
-    var email = validator.isEmpty(req.body.email) ? validator.isEmail(req.body.email) : req.body.email;
-    var password = req.body.password;
-    
-    Accounts.findOne({ $or: [{email: email}, {username: email } ]}, (err, user) => {
+    var validate_email = !validator.isEmail(req.body.email) ? !validator.isEmpty(req.body.email) : false ;
+    var validate_password = !validator.isEmpty(req.body.email);
 
-        if(err) {
-            res.status(500).send({message: 'Error en la peticion'});
-        } else {
-            if(!user ){
-                res.status(404).send({ message: 'el usuario no existe o se encuentra mal escrito' });               
+    if( validate_email && validate_password ) {
+        Accounts.findOne({ $or: [{email: email}, {username: email } ]}, (err, user) => {
+
+            if(err) {
+                logger.warn(err);
+                res.status(500).send({message: 'Error en la peticion'});
             } else {
-               bcrypt.compare(password, user.password, (err, check) => {
-                    if(check){
-                        res.status(200).send({token: jwt.createToken(user) });
-                    }
-                    else {
-                        res.status(404).send({message: 'Contraseña incorrecta '});
-                    }
+                if(!user ){
+                    res.status(404).send({ message: 'el usuario no existe o se encuentra mal escrito' });               
+                } else {
+                   bcrypt.compare(password, user.password, (err, check) => {
+                        if(check){
+                            res.status(200).send({token: jwt.createToken(user) });
+                        }
+                        else {
+                            res.status(404).send({message: 'Contraseña incorrecta '});
+                        }
+    
+                   })
+                }
+            }     
+    
+        })
+    } else {
+        res.status(400).send({message: 'Los datos de entrada no pueden estar vacios'});
+    }    
 
-               })
-            }
-        }     
-
-    })
   
 }
 
