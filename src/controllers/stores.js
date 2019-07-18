@@ -1,8 +1,8 @@
 'use strict'
 
 var logger = require('../../logger');
-var Stores = require('../models/stores');
-var Products = require('../models/products');
+var StoresModel = require('../models/stores');
+var ProductsModel = require('../models/products');
 var validator = require('validator');
 var _ = require('lodash');
 
@@ -16,7 +16,7 @@ storesController.newStore = (req, res) => {
     var validate_long = !validator.isEmpty(params.long);
 
     if(validate_productName && validate_lat && validate_long){
-        var store = new Stores();
+        var store = new StoresModel();
    
         //res.status(200).send(req.body)
         store.name = params.name;
@@ -46,7 +46,7 @@ storesController.newStore = (req, res) => {
 
 storesController.addNewProduct = (req, res) => {
     var postData = req.body;
-    var product = new Products(postData);
+    var product = new ProductsModel(postData);
     
     if( !_.isUndefined(postData.store) ) {
         product.store = postData.store;
@@ -68,5 +68,25 @@ storesController.addNewProduct = (req, res) => {
 
 }
 
+
+storesController.getProductByStore = (req, res) => {
+    var storeId = req.params.id;
+    if ( _.isNull(storeId) || _.isUndefined(storeId)) {
+        res.status(404).send({message: 'someting was wrong'});
+    } else {
+        var find = ProductsModel.find({ store: storeId }, (err, product) => {
+            if(err) {
+                logger.warn(err);
+            } else {
+                if(!product) {
+                    res.status(404).message({message: 'producto no encontrado'})
+                } else {
+                    res.status(200).send({products: product});
+                }
+            }
+        })
+    } 
+
+}
 
 module.exports = storesController;
