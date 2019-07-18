@@ -21,6 +21,7 @@ function MainRoutes(router, controllers) {
     //stores
     router.post('/api/addNewStore', controllers.stores.newStore);
     router.post('/api/addNewProduct', controllers.stores.addNewProduct);
+    router.get('/api/getProductStore/:id', controllers.stores.getProductByStore);
 
     //deliveryMan
     router.post('/api/registerDelivery', controllers.deliveryMan.newRegister);
