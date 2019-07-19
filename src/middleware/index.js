@@ -9,7 +9,9 @@ var moment =require('moment');
 var Chance = require('chance');
 // routers
 var chance = new Chance();
+var middleware = {};
 module.exports = function (app, callback) {
+    middleware = require('./authenticated');
     app.use(bodyParser.urlencoded({extended:false}));
     app.use(bodyParser.json());
 
@@ -40,7 +42,7 @@ module.exports = function (app, callback) {
             throw new Error(err);
             callback(err, null)
         }
-        callback(null, s);
+        callback(middleware, s);
     });
 }
 
