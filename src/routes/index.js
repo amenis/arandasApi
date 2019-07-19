@@ -6,7 +6,7 @@ var logger = require('../../logger');
 var path = require('path');
 var controllers = require('../controllers');
 
-function MainRoutes(router, controllers) {
+function MainRoutes(router, controllers, middleware) {
     
     router.get('/',(req, res)=>  {
         res.sendFile(path.join(__dirname,'../view/index.html'));
@@ -21,7 +21,7 @@ function MainRoutes(router, controllers) {
     //stores
     router.post('/api/addNewStore', controllers.stores.newStore);
     router.post('/api/addNewProduct', controllers.stores.addNewProduct);
-    router.get('/api/getProductStore/:id', controllers.stores.getProductByStore);
+    router.get('/api/getProductStore/:id', middleware.authenticated, controllers.stores.getProductByStore);
 
     //deliveryMan
     router.post('/api/registerDelivery', controllers.deliveryMan.newRegister);
@@ -56,7 +56,7 @@ function handle404(req, res){
 }
 
 module.exports = (app, middleware ) => {
-    MainRoutes(router, controllers);
+    MainRoutes(router, controllers,middleware);
     app.use('/', router);  
     app.use(handle404);
     app.use(handleErrors);
