@@ -81,7 +81,7 @@ var login = (req, res) => {
     var validate_password = !validator.isEmpty(req.body.email);
 
     if( validate_email && validate_password ) {
-        Accounts.findOne({ $or: [{email: email}, {username: email } ]}, (err, user) => {
+        Accounts.findOne({ $or: [{email: req.body.email}, {username: req.body.email}] } , (err, user) => {
 
             if(err) {
                 logger.warn(err);
@@ -90,7 +90,7 @@ var login = (req, res) => {
                 if(!user ){
                     res.status(404).send({ message: 'el usuario no existe o se encuentra mal escrito' });               
                 } else {
-                   bcrypt.compare(password, user.password, (err, check) => {
+                   bcrypt.compare(req.body.password, user.password, (err, check) => {
                         if(check){
                             res.status(200).send({token: jwt.createToken(user) });
                         }
