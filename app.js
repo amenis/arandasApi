@@ -1,42 +1,48 @@
 'use strict'
 
-
-var winston = require('winston');
+var logger = require('./logger');
 var nconf = require('nconf');
 var Chance = require('chance');
 var path = require('path');
 var fs = require('fs');
 var ws = require('./src/webservice');
+var db = require('./src/database');
 
+//nconf.argv().env().file({file: 'config.json'});
 
-//Node Enviroment status
-global.env = process.env.NODE_ENV || 'production';
+var configFile = path.join(__dirname,'/config.json');
+if( nconf.get('config') ) {
+    configFile = path.resolve(__dirname, nconf.get('config'));
+}
+
 
 //Call the method Chance
 var chance = new Chance();
 
-//create log levels
-winston.remove(winston.transports.Console);
-
-//Create the logger
-var sysLogger = winston.createLogger({
-    levels: winston.config.cli.levels,
-    format: winston.format.timestamp(),
-    transports: [        
-        new winston.transports.Console(),
-        new winston.transports.File({filename: './logs/error.log', level:'error'})
-    ]
-});
-
-winston.info('|        |  ||||||||  |        ||||||||||||  ||||||||||||  ||      || ||||||||||');
-winston.info('|        |  |         |        |             |          |  | |    | | |');
-winston.info('|        |  |         |        |             |          |  |  |  |  | |');
-winston.info('|   ||   |  ||||||    |        |             |          |  |   ||   | |||||||');
-winston.info('|  |  |  |  |         |        |             |          |  |        | |');
-winston.info('| |    | |  |         |        |             |          |  |        | |');
-winston.info('||      ||  ||||||||  |||||||  ||||||||||||  ||||||||||||  |        | ||||||||||');
+console.log('°        °  °°°°°°°°  °        °°°°°°°°°°°°  °°°°°°°°°°°°  °°      °° °°°°°°°°°°');
+console.log('°        °  °         °        °             °          °  ° °    ° ° °');
+console.log('°        °  °         °        °             °          °  °  °  °  ° °');
+console.log('°   °°   °  °°°°°°    °        °             °          °  °   °°   ° °°°°°°°');
+console.log('°  °  °  °  °         °        °             °          °  °        ° °');
+console.log('° °    ° °  °         °        °             °          °  °        ° °');
+console.log('°°      °°  °°°°°°°°  °°°°°°°  °°°°°°°°°°°°  °°°°°°°°°°°°  °        ° °°°°°°°°°°');
 
 
-ws.listen( ()=> {
-    winston.info('webService is Ready');
-} );
+  
+
+//start the server
+
+function start() {  
+
+    db.initDB( (err , db) => {
+        if(err) {
+            logger.warn('Cant\'t to connect to MongoDB '+ err);
+        } else {
+            ws.listen( function() { 
+               logger.info('server initiated');
+            });
+        }
+    })
+}
+
+start();
