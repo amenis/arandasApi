@@ -17,7 +17,7 @@ exports.authenticated = (req, res, next) => {
     //extract the quots from the headers
     var token = req.headers.authorization.replace(/['"]+/g, '' );
     //decode token
-    var payload = jwt.decode(token, nconf.get('tokens:secret'));
+    var payload = jwt.decode(token,'74158f461a67f3e393b8dc4a68b40d79353e2c290ceb493dc3ab79c2bf10f070ce8c9b82');
 
     try {
         //verify if the token doen't expired

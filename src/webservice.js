@@ -18,9 +18,9 @@ var port = process.env.PORT || 3000;
     module.exports.app = app;
     
     //middleware routes
-    middleware(app,()=> {
+    middleware(app,(middleware)=> {
       // routes 
-      routes(app);
+      routes(app, middleware);
     });
 
     // server listener module
