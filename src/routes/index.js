@@ -5,6 +5,8 @@ var router = express.Router();
 var logger = require('../../logger');
 var path = require('path');
 var controllers = require('../controllers');
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
 
 function MainRoutes(router, controllers, middleware) {
     
@@ -25,6 +27,9 @@ function MainRoutes(router, controllers, middleware) {
 
     //deliveryMan
     router.post('/api/registerDelivery', controllers.deliveryMan.newRegister);
+
+    //orders
+    router.post('/api/newOrder', [middleware.authenticated, multipartMiddleware], controllers.kardex.createOrder);
 
 }
 
