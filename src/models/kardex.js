@@ -11,7 +11,6 @@ var KardexSchema = new Schema({
         product: {type: Schema.ObjectId, ref: 'products'} ,
         quantity: Number           
     }],
-    //unitPrice: { type: number },
     date: { type: String, default: moment().format('MM/DD/YYYY,  h:mm:ss ') },
     userAccount: { type: Schema.ObjectId, ref: 'accounts' },
     comments: { type: String },
