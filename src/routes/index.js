@@ -30,6 +30,7 @@ function MainRoutes(router, controllers, middleware) {
 
     //orders
     router.post('/api/newOrder', [middleware.authenticated, multipartMiddleware], controllers.kardex.createOrder);
+    router.post('/api/seeOrder', [middleware.authenticated, multipartMiddleware], controllers.kardex.seeOrders);
 
 }
 
