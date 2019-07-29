@@ -3,6 +3,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var COLLECTION = 'roles';
+
 var roleSchema = new Schema({
     name: { type: String },
     description: { type: String },
@@ -11,9 +13,14 @@ var roleSchema = new Schema({
 });
 
 roleSchema.statics.getRoleByName = function (name, callback) {
-    var q = this.model('roles').findOne({ normalized: new RegExp('^' + name.trim() + '$', 'i') })
+    var q = this.model(COLLECTION).findOne({ name: name })
     return q.exec(callback)
 };
 
-
-module.exports = mongoose.model('roles', roleSchema);
+roleSchema.statics.getRoles = function (callback) {
+    return this.model(COLLECTION)
+      .find({})
+      .exec(callback)
+}
+  
+module.exports = mongoose.model(COLLECTION, roleSchema, COLLECTION);
