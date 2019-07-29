@@ -121,13 +121,13 @@ var createRolesByDefaut = (callback)=> {
                         description: rolesDefault.user.description,
                         grants: rolesDefault.user.grants,
                         normalize: 'user'
-                    }, (err, roleCreated)=> {
+                    }, (err, roleCreated) => {
                         if(err) {
                             logger.error(err);
-                        } 
-                        
-                        done()
-                    });
+                        }
+                    }
+                    
+                    done();                    
                 }
 
                
