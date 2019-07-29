@@ -4,6 +4,7 @@ var logger = require('../../logger');
 var _ = require('lodash');
 var validator = require('validator');
 var kardexModel = require('../models/kardex');
+var storeModel = require('../models/stores');
 
 var orders = {};
 
@@ -12,19 +13,28 @@ orders.createOrder = (req, res) => {
     var postData = req.body;   
     var kardex = new kardexModel(postData);
            
-    //validate data
-    var validatorStore = !validator.isEmpty(postData.store);
-    //var validatorProduct = !validator.isEmpty(postData.product);
-    //var validatorQuantity = !validator.isEmpty(postData.quantity) ? validator.isInt(postData.quantity) : false; 
+    //validate if the id's if store as user are correct
+    var validatorStore = !validator.isAlpha(postData.store);
+    var validatorUser = !validator.isAlpha( postData.user);
     
-    
-    if(validatorStore) {
+    if(validatorStore && validatorUser) {
         
         kardex.userAccount = postData.user;
         kardex.comment = postData.comments;
         kardex.status = 'order:open';
-        kardex.shoppingCart = postData.shoppingCart  
         
+        postData.shoppingCart.map( (obj) => {
+            //validate the cart from the request
+            var validateProduct = !validator.isAlpha(obj.product);
+            var validateQuantity = !validator.isInt(obj.quantity);
+
+            if ( validateProduct && validateQuantity ){
+                kardex.shoppingCart = postData.shoppingCart 
+            }
+
+        });  
+        
+        //store the order in kardex 
         kardex.save( (err, orderSaved) => {
             if(err) {
                 logger.warn(err);
@@ -42,6 +52,23 @@ orders.createOrder = (req, res) => {
         res.status(404).send({ message: 'Los datos no se registraron correctamente' });
     }
 
+}
+
+
+orders.seeOrders = (req, res) => {
+    
+    var validatorStore = !validator.isAlpha(req.body.store);
+    var validatorUser = !validator.isAlpha( req.body.user);
+    
+    if ( validatorStore && validatorUser ) {
+        
+        storeModel.find({ $and: [ {_id: req.body.store }, { userRegister: req.body.user } ] }, function(err, s) {
+            res.send(s);
+        });
+
+    } else {
+        res.status(500).send( {message: 'Los datos del usuario no son correctos'} );
+    }
 }
 
 module.exports = orders;

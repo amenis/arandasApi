@@ -23,6 +23,7 @@ storesController.newStore = (req, res) => {
         store.description = params.description;
         store.street = params.street;
         store.streetNumber = params.streetNumber;
+        store.userRegister = params.user;
         store.lat = params.lat;
         store.long = params.long;
         
@@ -87,6 +88,10 @@ storesController.getProductByStore = (req, res) => {
         })
     } 
 
+}
+
+storesController.getStoreByUser = (req, res) => {
+    
 }
 
 module.exports = storesController;
