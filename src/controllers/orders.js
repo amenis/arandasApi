@@ -62,9 +62,7 @@ orders.seeOrders = (req, res) => {
     
     if ( validatorStore && validatorUser ) {
         
-        storeModel.find({ $and: [ {_id: req.body.store }, { userRegister: req.body.user } ] }, function(err, s) {
-            res.send(s);
-        });
+       
 
     } else {
         res.status(500).send( {message: 'Los datos del usuario no son correctos'} );
